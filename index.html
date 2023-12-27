@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Etiqueta H2 en Tiempo Real con Pusher</title>
+    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
+</head>
+<body>
+
+<h2 id="miEtiqueta">Texto predeterminado</h2>
+<input type="text" id="inputTexto" placeholder="Nuevo texto">
+<button onclick="modificarEtiqueta()">Modificar</button>
+
+<script>
+    const pusher = new Pusher('Tf7827cc40f7a6249f793', {
+        cluster: 'us2',
+        encrypted: true
+    });
+
+    const channel = pusher.subscribe('mi-canal');
+
+    function modificarEtiqueta() {
+        var nuevoTexto = document.getElementById("inputTexto").value;
+        document.getElementById("miEtiqueta").innerText = nuevoTexto;
+
+        // Envía el nuevo texto al canal de Pusher
+        channel.trigger('client-modificar-etiqueta', { texto: nuevoTexto });
+    }
+
+    // Maneja los mensajes recibidos desde Pusher
+    channel.bind('modificar-etiqueta', function(data) {
+        var nuevoTexto = data.texto;
+        // Actualiza la etiqueta H2 con el texto recibido
+        document.getElementById("miEtiqueta").innerText = nuevoTexto;
+    });
+</script>
+
+</body>
+</html>
+
